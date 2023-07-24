@@ -1,5 +1,5 @@
 using MediatR;
-using System.Reflection;
+using UserCrudWithAspDotNetCoreWithAngular.RabitMQ;
 using UserCrudWithAspDotNetCoreWithAngular.Repository;
 
 namespace UserCrudWithAspDotNetCoreWithAngular
@@ -14,6 +14,7 @@ namespace UserCrudWithAspDotNetCoreWithAngular
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IRabitMQProducer, RabitMQProducer>();
             builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblies(typeof(LibraryEntrypoint).Assembly));
 
             var app = builder.Build();

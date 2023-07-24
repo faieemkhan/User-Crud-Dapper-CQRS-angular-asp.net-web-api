@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using UserCrudWithAspDotNetCoreWithAngular.Features.Command;
 using UserCrudWithAspDotNetCoreWithAngular.Features.Query;
 using UserCrudWithAspDotNetCoreWithAngular.Model;
+using UserCrudWithAspDotNetCoreWithAngular.RabitMQ;
 
 namespace UserCrudWithAspDotNetCoreWithAngular.Controllers
 {
@@ -13,10 +14,11 @@ namespace UserCrudWithAspDotNetCoreWithAngular.Controllers
     public class UserController : ControllerBase
     {
         private readonly IMediator _mediator;
-
-        public UserController(IMediator mediator)
+        private readonly IRabitMQProducer _rabitMQProducer;
+        public UserController(IMediator mediator, IRabitMQProducer rabitMQProducer)
         {
             _mediator = mediator;
+            _rabitMQProducer = rabitMQProducer;
         }
 
 
@@ -24,8 +26,9 @@ namespace UserCrudWithAspDotNetCoreWithAngular.Controllers
         [Route("GetAllUsers")]
         public async Task<List<Users>> GetAllUsers()
         {
-
-            return await _mediator.Send(new GetAllUserQuery());
+            List<Users> users = await _mediator.Send(new GetAllUserQuery());
+            _rabitMQProducer.SendUserMessage(users);
+            return users;
         }
 
         [HttpGet]

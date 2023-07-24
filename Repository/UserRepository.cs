@@ -12,7 +12,7 @@ namespace UserCrudWithAspDotNetCoreWithAngular.Repository
         public UserRepository(IConfiguration configuration)
         {
             _configuration = configuration;
-            connectionString = _configuration.GetConnectionString("default");
+            connectionString = _configuration.GetConnectionString("CompanyDb");
         }
         public IDbConnection Connection
         {
