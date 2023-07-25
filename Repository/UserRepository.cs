@@ -2,6 +2,7 @@
 using System.Data;
 using UserCrudWithAspDotNetCoreWithAngular.Model;
 using Dapper;
+using UserCrudWithAspDotNetCoreWithAngular.Service;
 
 namespace UserCrudWithAspDotNetCoreWithAngular.Repository
 {
@@ -9,10 +10,12 @@ namespace UserCrudWithAspDotNetCoreWithAngular.Repository
     {
         public readonly string connectionString;
         private readonly IConfiguration _configuration;
-        public UserRepository(IConfiguration configuration)
+        private readonly IHashService _hashService;
+        public UserRepository(IConfiguration configuration,IHashService hashService)
         {
             _configuration = configuration;
             connectionString = _configuration.GetConnectionString("CompanyDb");
+            _hashService = hashService;
         }
         public IDbConnection Connection
         {
@@ -25,11 +28,15 @@ namespace UserCrudWithAspDotNetCoreWithAngular.Repository
 
         public bool CreateUser(Users? user)
         {
+            (string hashedPassword, string salt) = _hashService.HashPassword(user.Password);
+            user.Password = hashedPassword;
+            user.Salt = salt;
+            user.Id = Guid.NewGuid();   
             using (IDbConnection dbconnection = Connection)
             {
-                string sql = @"INSERT INTO Users (Name, Email, Phone, Password, Status)
+                string sql = @"INSERT INTO Users (Id,Name, Email, Phone,Salt, Password, Status)
                             VALUES
-                              (@Name, @Email, @Phone, @Password, @Status)";
+                              (@Id, @Name, @Email, @Phone, @Salt,@Password, 0)";
                 dbconnection.Open();
                 var result = dbconnection.Execute(sql, user);
                 dbconnection.Close();

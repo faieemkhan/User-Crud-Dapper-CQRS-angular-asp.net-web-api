@@ -1,6 +1,7 @@
 using MediatR;
 using UserCrudWithAspDotNetCoreWithAngular.RabitMQ;
 using UserCrudWithAspDotNetCoreWithAngular.Repository;
+using UserCrudWithAspDotNetCoreWithAngular.Service;
 
 namespace UserCrudWithAspDotNetCoreWithAngular
 {
@@ -15,6 +16,9 @@ namespace UserCrudWithAspDotNetCoreWithAngular
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IRabitMQProducer, RabitMQProducer>();
+            builder.Services.AddScoped<IHashService , HashService>();
+            builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();  
+            builder.Services.AddScoped<IEmailService , EmailService>();
             builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblies(typeof(LibraryEntrypoint).Assembly));
 
             var app = builder.Build();

@@ -36,15 +36,12 @@ namespace UserCrudWithAspDotNetCoreWithAngular.Controllers
 
         public async Task<Users> GetUserById(int id)
         {
-            return await _mediator.Send(new GetUserByIdQuery() { Id = id });
+            Users user= await _mediator.Send(new GetUserByIdQuery() { Id = id });
+            _rabitMQProducer.SendUserByIdMessage(user);
+            return user;
         }
 
-        [HttpPost]
-        [Route("CreateUser")]
-        public async Task<bool> CreateUser(Users users)
-        {
-            return await _mediator.Send(new CreateUserCommand() { User = users });
-        }
+
 
         [HttpPut]
         [Route("UpdateUser/{id:int}")]
